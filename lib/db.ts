@@ -1,6 +1,6 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-const uri = process.env.DATABASE_URL || "";
+const uri = process.env.NEXT_PRIVATE_DATABASE_URL || "";
 
 if (!uri) throw new Error("Missing DATABASE_URL environment variable.");
 
