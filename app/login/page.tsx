@@ -38,11 +38,11 @@ export default function Login() {
                 <h1 className="font-bold text-lg text-gray-800">Fazer Login</h1>
                 <div className="flex flex-col w-full">
                     <label htmlFor="email" className="text-sm">E-mail:</label>
-                    <input type="email" { ...register("email", { required: true }) } autoComplete="off" className="border-b-2 border-gray-300 outline-none focus:border-teal-500 transition ease-in-out duration-200" />
+                    <input type="email" { ...register("email", { required: true }) } autoComplete="off" className="text-teal-600 border-b-2 border-gray-300 outline-none focus:border-teal-500 transition ease-in-out duration-200" />
                 </div>
                 <div className="flex flex-col w-full">
                     <label htmlFor="email" className="text-sm">Senha:</label>
-                    <input type="password" { ...register("password", { required: true }) } className="border-b-2 border-gray-300 outline-none focus:border-teal-500 transition ease-in-out duration-200" />
+                    <input type="password" { ...register("password", { required: true }) } className="text-teal-800 border-b-2 border-gray-300 outline-none focus:border-teal-500 transition ease-in-out duration-200" />
                 </div>
                 <input type="submit" value="Entrar" className="cursor-pointer w-full border p-1.5 rounded text-sm border-orange-500 bg-orange-500 text-white font-bold hover:bg-orange-600 hover:border-orange-600 transition ease-in-out duration-200" />
             </form>
