@@ -7,7 +7,7 @@ export async function GET() {
         const db = client.db("blog");
         const users = await db.collection("posts").find().toArray();
 
-        return NextResponse.json(users);
+        return NextResponse.json({ users }, { status: 200 });
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Erro ao obter posts.", err }, { status: 500 });
