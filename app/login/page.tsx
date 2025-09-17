@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
 
 type Inputs = {
     email: string;
@@ -20,8 +21,28 @@ export default function Login() {
         watch,
         formState: { errors },
     } = useForm<Inputs>();
-    const onSubmit: SubmitHandler<Inputs> = (data) => {
-        console.log(data);
+    const onSubmit: SubmitHandler<Inputs> = async (data) => {
+        try {
+            const response = await signIn('credentials', {
+                redirect: false,
+                email: data.email,
+                password: data.password,
+            });
+
+            console.log("[LOGIN_RESPONSE]: ", response);
+
+            if (!response?.error) {
+                router.refresh();
+                router.push("/dashboard");
+            } else {
+                console.log("[LOGIN_ERROR]: Senha incorreta!");
+                setMessage("E-mail e/ou senha incorreta!");
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            //
+        }
     };
 
     useEffect(() => {

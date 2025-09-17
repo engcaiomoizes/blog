@@ -10,7 +10,7 @@ export async function GET() {
         return NextResponse.json(users);
     } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: "Erro ao obter posts." }, { status: 500 });
+        return NextResponse.json({ error: "Erro ao obter posts.", err }, { status: 500 });
     }
 }
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
             createdAt: new Date(),
         });
 
-        return NextResponse.json({ message: "Usuário cadastrado com sucesso!", id: result.insertedId });
+        return NextResponse.json({ message: "Publicado com sucesso!", id: result.insertedId });
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Erro ao cadastrar post." }, { status: 500 });
