@@ -5,9 +5,9 @@ export async function GET() {
     try {
         const client = await clientPromise;
         const db = client.db("blog");
-        const users = await db.collection("posts").find().toArray();
+        const response = await db.collection("posts").find().toArray();
 
-        return NextResponse.json({ users }, { status: 200 });
+        return NextResponse.json({ response }, { status: 200 });
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Erro ao obter posts.", err }, { status: 500 });
@@ -16,22 +16,78 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
+        const contentType = req.headers.get('content-type');
+        if (!contentType || !contentType.includes('multipart/form-data')) {
+            console.error("Tipo de conteúdo inválido!");
+            return NextResponse.json({ message: "Tipo de conteúdo inválido." }, { status: 400 });
+        }
+
+        const formData = await req.formData();
+
+        const author = formData.get('author') as string;
+        const title = formData.get('title') as string;
+        const url = formData.get('url') as string;
+        const subtitle = formData.get('subtitle') as string;
+        const content = formData.get('content') as string;
+        const file = formData.get('file') as File;
+
+        if (!file) {
+            console.error("Thumbnail ausente.");
+            return NextResponse.json({ message: "Thumbnail ausente." }, { status: 400 });
+        }
+
+        let thumbnail = null;
+        
+        if (file && typeof file != 'string') {
+            const buffer = await file.arrayBuffer();
+            const bytes = new Uint8Array(buffer);
+
+            const stream = new ReadableStream({
+                start(controller) {
+                    controller.enqueue(bytes);
+                    controller.close();
+                }
+            });
+
+            const fileForCloudinary = new File([await (new Response(stream)).blob()], file.name, { type: file.type });
+
+            const cloudinaryFormData = new FormData();
+            cloudinaryFormData.append('file', fileForCloudinary);
+            cloudinaryFormData.append('folder', `${process.env.NEXT_PRIVATE_CLOUDINARY_FOLDER}`);
+            cloudinaryFormData.append('upload_preset', `${process.env.NEXT_PRIVATE_CLOUDINARY_PRESET}`);
+
+            const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${Buffer.from(process.env.NEXT_PRIVATE_CLOUDINARY_API_KEY + ":" + process.env.NEXT_PRIVATE_CLOUDINARY_API_SECRET).toString('base64')}`
+                },
+                body: cloudinaryFormData,
+            });
+
+            const cloudinaryData = await cloudinaryResponse.json();
+
+            if (!cloudinaryResponse.ok) {
+                console.error("Cloudinary error: ", cloudinaryData);
+                return NextResponse.json({ error: "Erro ao fazer upload para o Cloudinary: " + cloudinaryData.error }, { status: 500 });
+            }
+
+            thumbnail = cloudinaryData.public_id;
+        }
 
         const client = await clientPromise;
         const db = client.db("blog");
         const users = db.collection("posts");
 
         const result = await users.insertOne({
-            author: body.author,
-            title: body.title,
-            subtitle: body.subtitle,
-            content: body.content,
-            thumbnail: body.thumbnail,
+            author: author,
+            title: title,
+            subtitle: subtitle,
+            content: content,
+            thumbnail: thumbnail,
             createdAt: new Date(),
         });
 
-        return NextResponse.json({ message: "Publicado com sucesso!", id: result.insertedId });
+        return NextResponse.json({ message: "Publicado com sucesso!", result });
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Erro ao cadastrar post." }, { status: 500 });

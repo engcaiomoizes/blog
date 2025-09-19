@@ -1,4 +1,5 @@
 import Menu from "@/components/dashboard/menu";
+import { AuthProvider } from "@/providers/auth-provider";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,9 +13,11 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div>
-            <Menu />
-            {children}
-        </div>
+        <AuthProvider>
+            <div>
+                <Menu />
+                {children}
+            </div>
+        </AuthProvider>
     );
 }

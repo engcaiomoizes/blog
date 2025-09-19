@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 type Inputs = {
     email: string;
@@ -14,6 +14,9 @@ export default function Login() {
     const [message, setMessage] = useState("");
 
     const router = useRouter();
+
+    const { data: session, status } = useSession();
+    if (status === "authenticated") router.push('/dashboard');
 
     const {
         register,

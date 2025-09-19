@@ -1,6 +1,41 @@
+'use client';
+
+import { Post } from "@/types/post";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Posts() {
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    const handleLoad = async () => {
+        try {
+            setLoading(true);
+
+            const response = await fetch('/api/posts');
+
+            if (response.ok) {
+                const data = await response.json();
+
+                setPosts(data.response);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const load = async () => {
+            await handleLoad();
+        };
+
+        load();
+    }, []);
+
+    if (loading) return null;
+
     return (
         <div className="flex flex-col gap-4 container mx-auto p-10">
             <div className="flex items-center justify-end">
@@ -14,10 +49,14 @@ export default function Posts() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                        <td className="px-6 py-4">Battlefield 6</td>
-                        <td className="px-6 py-4">Teste de descrição</td>
-                    </tr>
+                    {
+                        posts.map((post, index) => (
+                            <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                                <td className="px-6 py-4">{post.title}</td>
+                                <td className="px-6 py-4">{post.subtitle}</td>
+                            </tr>
+                        ))
+                    }
                 </tbody>
             </table>
         </div>

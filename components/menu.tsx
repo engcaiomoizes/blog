@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 export default function Menu() {
     const pathname = usePathname();
     
-    const excludeRoutes = pathname.startsWith('/dashboard');
+    const excludeRoutes = pathname.startsWith('/dashboard') || 
+        pathname.includes('/login');
 
     if (excludeRoutes) return null;
 
