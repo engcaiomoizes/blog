@@ -17,9 +17,9 @@ export default function Posts() {
 
             const data = await response.json();
 
-            console.log(data.users);
+            console.log(data.response);
 
-            setPosts(data.users);
+            setPosts(data.response);
         } catch (err) {
             console.error(err);
         } finally {

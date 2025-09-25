@@ -1,4 +1,5 @@
 import clientPromise from "@/lib/db";
+import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -76,11 +77,12 @@ export async function POST(req: NextRequest) {
 
         const client = await clientPromise;
         const db = client.db("blog");
-        const users = db.collection("posts");
+        const posts = db.collection("posts");
 
-        const result = await users.insertOne({
+        const result = await posts.insertOne({
             author: author,
             title: title,
+            url: url,
             subtitle: subtitle,
             content: content,
             thumbnail: thumbnail,
@@ -91,5 +93,26 @@ export async function POST(req: NextRequest) {
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: "Erro ao cadastrar post." }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: NextResponse) {
+    try {
+        const { id } = await req.json();
+
+        const client = await clientPromise;
+        const db = client.db("blog");
+        const posts = db.collection("posts");
+
+        const objectId = new ObjectId(String(id));
+
+        const result = await posts.deleteOne({
+            _id: objectId,
+        });
+
+        return NextResponse.json({ message: "Postagem deletada com sucesso!", result });
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ message: "Error! ", err }, { status: 500 });
     }
 }
