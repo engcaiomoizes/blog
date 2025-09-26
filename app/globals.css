@@ -181,4 +181,8 @@ body {
   h1 {
     @apply font-bold text-2xl;
   }
+
+  blockquote {
+    @apply p-4 my-4 border-s-4 border-gray-300 bg-gray-50
+  }
 }

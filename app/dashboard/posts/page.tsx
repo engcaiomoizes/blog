@@ -83,6 +83,7 @@ export default function Posts() {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" className="px-6 py-3">Título</th>
+                        <th scope="col" className="px-6 py-3">Autor</th>
                         <th scope="col" className="px-6 py-3">Data</th>
                         <th scope="col" className="px-6 py-3"></th>
                     </tr>
@@ -93,6 +94,7 @@ export default function Posts() {
                         posts.map((post, index) => (
                             <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                                 <td className="px-6 py-4">{post.title}</td>
+                                <td className="px-6 py-4">{post.author.name}</td>
                                 <td className="px-6 py-4">{format(post.createdAt, "dd/MM/yyyy")}</td>
                                 <td className="px-6 py-4 flex items-center gap-2">
                                     <button className="cursor-pointer flex items-center"><FaEdit /></button>
@@ -116,7 +118,7 @@ export default function Posts() {
                         ))
                         :
                         <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                            <td colSpan={3} className="px-6 py-4 text-center">
+                            <td colSpan={4} className="px-6 py-4 text-center">
                                 Nenhuma postagem cadastrada.
                             </td>
                         </tr>
